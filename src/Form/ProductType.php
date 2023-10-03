@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Category;
 use App\Entity\Commande;
 use App\Entity\Product;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -77,18 +78,9 @@ class ProductType extends AbstractType
                     'placeholder'=>'Saisissez la description de l\'oeuvre'
                 ]
             ])
-            // Menu déroulant pour sélectionner la commande associée
-            ->add('commande', EntityType::class, [
-                'class' => Commande::class, 
-                'label' => 'Commande associée',
-                'multiple' => false, 
-                'attr' => [
-                    'placeholder' => 'Sélectionnez la commande associée à l\'oeuvre'
-                ]
-            ])
             // Menu déroulant pour sélectionner les catégories associées
             ->add('category', EntityType::class, [
-                'class'=>ProductType::class,
+                'class'=>Category::class,
                 'label'=>'Catégorie',
                 'choice_label'=>'name',
                 'multiple'=>true,
@@ -99,7 +91,7 @@ class ProductType extends AbstractType
             // Bouton de soumission
             ->add('Valider', SubmitType::class )
         ;
-        
+
         } elseif ($options['update']==true){
             $builder
             ->add('title', TextType::class,[
@@ -168,7 +160,7 @@ class ProductType extends AbstractType
             ])
             // Menu déroulant pour sélectionner les catégories associées
             ->add('category', EntityType::class, [
-                'class'=>ProductType::class,
+                'class'=>Category::class,
                 'label'=>'Catégorie',
                 'choice_label'=>'name',
                 'multiple'=>true,
@@ -187,6 +179,8 @@ class ProductType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Product::class,
+            'create'=>false,
+            'update'=>false
         ]);
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -32,12 +34,17 @@ class Product
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[ORM\OneToOne(mappedBy: 'product', cascade: ['persist', 'remove'])]
-    private ?Commande $commande = null;
+   
 
-    #[ORM\ManyToOne(inversedBy: 'products')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?category $category = null;
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'products')]
+    private Collection $category;
+
+    public function __construct()
+    {
+        $this->category = new ArrayCollection();
+    }
+
+    
 
     public function getId(): ?int
     {
@@ -116,32 +123,31 @@ class Product
         return $this;
     }
 
-    public function getCommande(): ?Commande
-    {
-        return $this->commande;
-    }
+    
 
-    public function setCommande(Commande $commande): static
-    {
-        // set the owning side of the relation if necessary
-        if ($commande->getProduct() !== $this) {
-            $commande->setProduct($this);
-        }
-
-        $this->commande = $commande;
-
-        return $this;
-    }
-
-    public function getCategory(): ?category
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategory(): Collection
     {
         return $this->category;
     }
 
-    public function setCategory(?category $category): static
+    public function addCategory(Category $category): static
     {
-        $this->category = $category;
+        if (!$this->category->contains($category)) {
+            $this->category->add($category);
+        }
 
         return $this;
     }
+
+    public function removeCategory(Category $category): static
+    {
+        $this->category->removeElement($category);
+
+        return $this;
+    }
+
+  
 }
